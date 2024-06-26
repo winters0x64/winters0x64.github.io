@@ -1,0 +1,218 @@
+---
+title: The Making Of This Site
+description: How i made this site, going from only knowing html,css and js to using frameworks like nextjs,tailwindcss....
+tags: frameworks,nextjs,tailwindcss
+image: react.png
+slug: 2024/MakingOfThisSite
+publishDate: 06-25-2024
+---
+
+import MdxLayout from '@/components/mdx-layout'
+
+export const metadata = {
+  title: 'The Making Of This Site',
+  description: 'How i made this site, going from only knowing html,css and js to using frameworks like nextjs,tailwindcss....',
+  tags: 'frameworks,nextjs,tailwindcss',
+  year: '2024',
+};
+
+# The Making Of This Site
+####
+## Description: How i made this site, going from only knowing html,css and js to using frameworks like nextjs,tailwindcss....
+####
+### Tags: frameworks,nextjs,tailwindcss
+####
+####
+
+## Intro
+####
+
+Alright so this would be my first blog in like ever, so here i go...
+
+As of 2024 it'll be 4 years since i found the field of computer sicence and around 2 years i've been involved in the field of
+cyber security and i play CTF's with team bi0s, and i've come across a lot of CTF writeups from time to time, some of them are
+honestly pretty amazing, so i thought about making a blog. Initially i had the idea of making a blog using some static site
+generators like hugo, hexo etc but then i thought i do web exploitation in CTF's so learning some web dev frameworks wouldn't
+hurt, so i dropped the idea of having to use some other generators and i decided to create one from scratch. When it comes to
+web development we have a lot of options, too many!!!, So i finally settled with nextjs because of a few reasons one of them
+being that one of my seniors found a security vulnerability in it and advised me to learn the framework, i tried to learn the
+framework and couldn't understand anything so i decided to learn the framework in depth and to actually make a website in it
+. I endured my first obstacle that being inorder to learn nextjs i had to learn react basics also i decided to use typescript 
+so i had to learn typescript as well.
+
+####
+## Typescript
+####
+
+I knew javascript beforehand so i had an upperhand while learning typescript also i had done programming in statically typed
+languages before so learning typescript was some what easier for me. I followed Mosh and WebDevSimplified from youtube and after
+some practice i was good with it, Still have a lot to learn about it but for the time being i had a good grasp.
+
+####
+## React
+####
+
+I didn't knew anything about React, my knowledge of web dev went only upto html,css,js at that point so all of the concept was
+very new to me, inorder to learn react i went through a lot of resources, too many to remember in fact, off the top of my head 
+i went through by WebDevSimplified on react on yt. After making some sample sites and going through the documentation several times
+i finally understood the "react way of thinking" and hence was good with it, or so i thought.
+
+####
+## NextJs
+####
+
+Ok finally completing the circle we back to nextjs after learning all its prerequisites yay!!!, Okay here i first i had to learn
+about what and why is nextjs and how is it supposed to be better than react in some circumstances this took me some time i 
+couldn't wrap my head around the concept of nextjs i attribute that to my lack of knowledge in react. After finally getting 
+the core aspect of nextjs, next step was to learn it, again a lot of options so i referred back to good old Mosh from youtube 
+but i couldn't grasp anything from his video(obviously my skill issue), so i decided to switch to an alternate source of learning
+and came across a playlist created by Codeevolution on youtube i initially thought to skim through the entire playlist but after
+finishing almost 20 videos i was bored but learned some nextjs basics which was enough for me to get my feet wet with nextjs.
+
+
+####
+## Tailwindcss
+####
+
+I had to learn this framework as well becuase it's famous lol, but on the actual note i liked the features that it brings to the 
+table and i watched some tutorials only to realize that you don't have to refer to any tutorials to learn tailwindcss, just follow
+their documentation and this awesome website [tailwindcss](https://tailwindcomponents.com/cheatsheet/). So like that, that was 
+also learned and done.
+
+
+####
+## Finally making the site
+####
+
+Now that every prerequisite was met, it was time to experiment with what i have learned over the past 2 weeks, i had some experience
+in linux desktop ricing(*The art of making your linux desktop look stylish*) so from that i knew that i had to make a design plan
+before proceeding so i fired up figma and started making a design and it turned up suprisingly well, so i started implementing it 
+in nextjs/tailwindcss and after a lot of failed attempts and tries i had something working and it was looking good all that work
+was beginning to payoff. The ideas that i had for this page was inspired by zeyu2001 and ended up nothing like his website, but
+i liked the design so i went with it.
+####
+Now i went to work on the AboutMe page after making the design in figma after that i started to implement it in nextjs and I was 
+able to cook it up in about ~3 hours which was good enough for me as i had only a little idea on what i was doing, and like that
+AboutMe page was set up with a nice type writer animation.
+####
+Alright now once the sidequests were completed it was time to take on the big guy that being the blog page itself i split the blog
+page into two sections one being the blog listing page and one being the page which actually renders the blog. I started working
+on the blog listing page, so i needed the total number of blogs in the server to generate that amount of blog cards on the listing
+page so for that i used this function.
+####
+```typescript
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter';
+
+export default function getPosts() {
+    const postsDirectory = path.join(process.cwd(), 'src/app/blog/posts');
+    const folderYears = fs.readdirSync(postsDirectory);
+    let posts = [];
+    // Iterate over the folders in the posts directory which will be the years folder
+    for(let i=0; i<folderYears.length;i++){
+        // Get the folders inside the years folder
+        const folderNames = fs.readdirSync(path.join(postsDirectory, folderYears[i]));
+        // Iterate over the folders inside the years folder
+        for(let j=0;j<folderNames.length;j++) {
+            const fullPath = path.join(postsDirectory, folderYears[i], folderNames[j]) + '/page.mdx';
+            // Read the contents of the file
+            const fileContents = fs.readFileSync(fullPath, 'utf8');
+            // Parse the front matter
+            const  {data, content} = matter(fileContents)
+            // Append the data object to the posts array
+            data.publishDate = new Date(data.publishDate)
+            posts.push(data);
+        }
+    }
+    // Order elements according to the date, that means the date which is recent will be first in the array and so on
+    posts.sort((a, b) => b.publishDate - a.publishDate);
+    
+    return posts
+}
+```
+####
+So this guy fetches the total number of blogs in the posts directory and returns a js object, but in the blog card i also
+had to add font-matter and later parse it with gray-matter to get the metadata information from the blog post. So i added 
+remarkFrontmatter as an MDX plugin and also added gray-matter as a dependency and then parsed the posts as shown in the 
+script and after a lot of engineering i had a good looking finished blog listing page with some tailwind effects that I
+stole from the web.
+####
+Now for the final part of the blog that is the blog post itself, for it I used the wellknown MDX library in which you can also
+write JSX code as well, so after spending some time setting it up, I wrote my first successfully rendered markdown content after
+spending 4 hours fixing my code ;-; and from then on i implemented my custom components to use with MDX this allowed me to use the 
+full power of MDX and TSX.I used rehypeSlug and highlightjs for getting the cool code highlighting in the blogpost . After setting that up i worked on setting up the index part for blogpost which lists what all sections
+are there in the blog post kind of like table of contents for the blog post, this part was tougher than i expected i had to specific
+id's for the html generated by MDX from the markdown content so for that i used the MDX plugin rehypeSlug, so now i can jump too
+specific part of the blogpost using scroll to text fragment via the anchor in the url. And then i parsed the subheadings from the
+markdown and generated an Index part for the website. The code for all that is this
+
+####
+```typescript
+// This util is used to generate the table of contents for the markdown files
+
+// Read the markdown file
+import fs from 'fs'
+import Link from 'next/link';
+
+export default function genTOC(title:string,year:string) {
+    const file = process.cwd() + '/src/app/blog/posts/'+year+'/'+title+'/'+'page.mdx';
+    // Parse the file to get subheadings
+    const fileContents = fs.readFileSync(file, 'utf8');
+    // Get the subheadings
+    let subheadings = fileContents.match(/(?<=^## ).+/gm);
+    subheadings?.shift()
+
+    // Create the list in which if we click a subheading, we are taken to that part of the page
+    return (
+        <>
+        <ul className='space-y-10'>
+            {subheadings?.map((subheading, index) => (
+                <li key={index}>
+                    {/* Replace spaces with hyphens */}
+                    {/* We need to match the id's generated by rehype slug so that's why we replace spaces with hyphens and lowercase */}
+                    <div className='flex flex-row space-x-3 text-xl'>
+                        <span>--</span>
+                        <Link className='text-lg transform transition hover:-translate-y-2' href={`#${subheading.replace(/ /g, '-').toLowerCase()}`}>
+                            {subheading}
+                        </Link>
+                    </div>
+                </li>
+            ))}
+        </ul>
+        </>
+    )
+}
+```
+####
+
+Pheww, after that part the blog was almost done, that took me around 4 weeks working 3-5 hours per day, in middle i went to south
+korea for a CTF finals so i wasn't able to work on the blog.
+
+####
+
+## Conclusion
+####
+I learned a ton working on this blog, from cool frameworks like nextjs, react, tailwindcss to having extreme patience at times.
+In the end i'm glad that after a long time i was able to finish a project completly and satisfactorily.
+
+Some people that i love to give credit for making this website happen are:
+####
+• Aneesh(For recommending me to learn nextjs)
+####
+• [Codeevolution](https://www.youtube.com/@Codevolution)(playlist for nextjs)
+####
+• [Mosh](https://www.youtube.com/@programmingwithmosh)(typescript and react)
+####
+• [WebDevSimplified](https://www.youtube.com/@WebDevSimplified)(typescript,react,tailwindcss)
+####
+And a huge thanks to guy who created flexboxes.
+####
+### The code for this site will be in my github.<br />
+### Thanks for reading.<br />
+### Have a good day.
+
+
+export default function MDXPage({ children }) {
+   return <MdxLayout title='MakingOfThisSite' year={metadata.year}> {children} </MdxLayout>
+}
