@@ -21,4 +21,4 @@ const withMDX = createMDX({
     },
 });
 
-export default withMDX(nextConfig); 
+export default withMDX(nextConfig);
